@@ -1,18 +1,10 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
-let client: ApolloClient<any> | null = null;
 
 const GRAPHQL_ENDPOINT =
-  process.env.GRAPHQL_ENDPOINT || "https://jsonplaceholder.ir/graphql";
+  process.env.GRAPHQL_ENDPOINT || "https://graphql.anilist.co";
 
-export const getClient = () => {
-  if (!client || typeof window === "undefined") {
-    client = new ApolloClient({
-      link: new HttpLink({
-        uri: GRAPHQL_ENDPOINT || "https://jsonplaceholder.ir/graphql",
-      }),
-      cache: new InMemoryCache(),
-    });
-  }
-  return client;
-};
+export const client = new ApolloClient({
+  uri: GRAPHQL_ENDPOINT,
+  cache: new InMemoryCache(),
+});
