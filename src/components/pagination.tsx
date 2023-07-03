@@ -45,23 +45,17 @@ const StyledPaginateContainer = styled.div<{
 `;
 
 const Pagination = ({
+  initialSelected,
   pageCount,
   onClick,
 }: {
+  initialSelected?: number;
   pageCount: number;
   onClick: ({ selected }: { selected: number }) => void;
 }) => {
   const borderColor = useColorModeValue("#E2E8F0", "#2D3748");
   const hoverColor = useColorModeValue("#EDF2F7", "#2D3748");
 
-  const marginPagesDisplayed = useBreakpointValue(
-    { base: 0, sm: 1 },
-    { ssr: false }
-  );
-  const breakLabel = useBreakpointValue(
-    { base: "", sm: "..." },
-    { ssr: false }
-  );
   const linkPadding = useBreakpointValue(
     { base: "12px", md: "16px" },
     { ssr: false }
@@ -75,8 +69,8 @@ const Pagination = ({
       <ReactPaginate
         pageCount={pageCount || 0}
         pageRangeDisplayed={3}
-        marginPagesDisplayed={marginPagesDisplayed}
-        breakLabel={breakLabel}
+        marginPagesDisplayed={0}
+        breakLabel={""}
         breakClassName="break-me"
         containerClassName="pagination"
         activeClassName="active"
@@ -88,6 +82,7 @@ const Pagination = ({
         activeLinkClassName="activeLinkClassName"
         nextLabel={<ChevronRightIcon fontSize="20px" />}
         previousLabel={<ChevronLeftIcon fontSize="20px" />}
+        initialPage={initialSelected}
         onPageChange={(e) => {
           onClick(e);
         }}

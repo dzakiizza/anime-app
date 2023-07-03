@@ -6,28 +6,16 @@ import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { GET_ANIME_LIST } from "@/graphql/queries";
 import { AnimeListResponse } from "@/graphql/queries-types";
 import { useQuery } from "@apollo/client";
-import { StarIcon } from "@chakra-ui/icons";
-import {
-  Card,
-  CardBody,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-  Image,
-  HStack,
-  Tag,
-  Flex,
-  Skeleton,
-  SkeletonText,
-} from "@chakra-ui/react";
+import { Heading, VStack } from "@chakra-ui/react";
+import Link from "next/link";
 import React from "react";
 
 export default function Home() {
   const { loading, error, data, fetchMore } = useQuery<AnimeListResponse>(
     GET_ANIME_LIST,
     {
-      variables: { page: 1, perPage: 10 },
+      variables: { page: 0, perPage: 10 },
+      fetchPolicy: "cache-and-network",
     }
   );
 
@@ -67,15 +55,21 @@ export default function Home() {
           </VStack>
         ) : (
           <VStack gap="4" h="full" w="full">
-            <SimpleGridWrapper>
+            <SimpleGridWrapper justifyContent={"center"}>
               {data?.Page.media.map((item) => (
-                <AnimeCard
+                <Link
                   key={item.id}
-                  averageScore={item.averageScore}
-                  coverImage={item.coverImage}
-                  seasonYear={item.seasonYear}
-                  title={item.title}
-                />
+                  href={`/anime-detail/${item.id}`}
+                  style={{ width: "100%" }}
+                >
+                  <AnimeCard
+                    key={item.id}
+                    averageScore={item.averageScore}
+                    coverImage={item.coverImage}
+                    seasonYear={item.seasonYear}
+                    title={item.title}
+                  />
+                </Link>
               ))}
             </SimpleGridWrapper>
             <Pagination pageCount={pageCount} onClick={handleOnClick} />

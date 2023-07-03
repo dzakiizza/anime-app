@@ -7,6 +7,7 @@ import {
   IconButton,
   useColorMode,
 } from "@chakra-ui/react";
+import Link from "next/link";
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -24,17 +25,17 @@ const Header = () => {
       backdropBlur="8px"
       zIndex={999}
     >
-      <Flex
-        width={{ base: "90%", md: "80%" }}
-        justifyContent={"space-between"}
-      >
-        <Heading color="teal.400">Anime List</Heading>
-        <IconButton
+      <Flex width={{ base: "90%", md: "80%" }} justifyContent={"space-between"}>
+        <Link href={"/"}>
+          <Heading color="teal.400">Anime List</Heading>
+        </Link>
+        {/* <IconButton
           aria-label={"toggle-mode"}
           icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
           color="teal.400"
+          background={"transparent"}
           onClick={toggleColorMode}
-        />
+        /> */}
       </Flex>
     </HStack>
   );

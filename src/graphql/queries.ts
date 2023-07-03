@@ -10,7 +10,7 @@ export const GET_ANIME_LIST = gql`
         hasNextPage
         perPage
       }
-      media(sort: TRENDING, isAdult: false, type: ANIME) {
+      media(sort: TRENDING, isAdult: false, type: ANIME, format: TV) {
         id
         title {
           romaji
@@ -21,6 +21,27 @@ export const GET_ANIME_LIST = gql`
           large
           color
         }
+      }
+    }
+  }
+`;
+
+export const GET_ANIME_DETAILS = gql`
+  query ($id: Int) {
+    Media(id: $id) {
+      id
+      title {
+        romaji
+      }
+      episodes
+      description
+      averageScore
+      genres
+      format
+      seasonYear
+      coverImage {
+        extraLarge
+        large
       }
     }
   }

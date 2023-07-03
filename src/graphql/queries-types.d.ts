@@ -11,7 +11,18 @@ export type MediaAnimeList = {
   title: { romaji: string };
   averageScore: number;
   seasonYear: string;
-  coverImage: { large: string; color: string };
+  coverImage: { extraLarge?: string; large: string; color: string };
+  genres: [string];
+  format: string;
+};
+
+export type MediaAnimeDetail = {
+  Media: MediaAnimeList & {
+    genres: [string];
+    format: string;
+    episodes: number;
+    description: string;
+  };
 };
 
 export type AnimeListResponse = {

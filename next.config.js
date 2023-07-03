@@ -6,6 +6,16 @@ const nextConfig = {
   webpack: (config) => {
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "s4.anilist.co",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
