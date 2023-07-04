@@ -6,9 +6,18 @@ import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { GET_ANIME_LIST } from "@/graphql/queries";
 import { AnimeListResponse } from "@/graphql/queries-types";
 import { useQuery } from "@apollo/client";
-import { Heading, VStack } from "@chakra-ui/react";
+import { Card, CardBody, Text, Heading, VStack, Flex } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
+import {
+  CloseIcon,
+  InfoIcon,
+  WarningIcon,
+  WarningTwoIcon,
+  InfoOutlineIcon,
+  NotAllowedIcon,
+} from "@chakra-ui/icons";
+import ErrorState from "@/components/error-state";
 
 export default function Home() {
   const { loading, error, data, fetchMore } = useQuery<AnimeListResponse>(
@@ -38,7 +47,8 @@ export default function Home() {
     [fetchMore]
   );
 
-  if (error) return null;
+  if (error) return <ErrorState />;
+
   return (
     <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
       <VStack p={{ base: "0", lg: "4" }} w="full">
@@ -48,7 +58,7 @@ export default function Home() {
         {loading ? (
           <VStack gap="4" h="full" w="full">
             <SimpleGridWrapper>
-              {[...Array(10)].map((index) => (
+              {[...Array(10)].map((_items, index) => (
                 <AnimeCardLoading key={index} />
               ))}
             </SimpleGridWrapper>

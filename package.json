@@ -22,14 +22,13 @@
     "eslint-config-next": "13.4.7",
     "framer-motion": "^10.12.18",
     "graphql": "^16.7.1",
+    "html-react-parser": "^4.0.0",
+    "immer": "^10.0.2",
     "next": "13.4.7",
+    "rc-scrollbars": "^1.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-paginate": "^8.2.0",
-    "sanitize-html": "^2.11.0",
     "typescript": "5.1.6"
-  },
-  "devDependencies": {
-    "@types/sanitize-html": "^2.9.0"
   }
 }
