@@ -1,23 +1,14 @@
 import AnimeCard from "@/components/anime-card";
 import AnimeCardLoading from "@/components/anime-card-loading";
 import BaseContainer from "@/components/base-container";
+import ErrorState from "@/components/error-state";
 import Pagination from "@/components/pagination";
 import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { GET_ANIME_LIST } from "@/graphql/queries";
 import { AnimeListResponse } from "@/graphql/queries-types";
 import { useQuery } from "@apollo/client";
-import { Card, CardBody, Text, Heading, VStack, Flex } from "@chakra-ui/react";
-import Link from "next/link";
+import { Heading, VStack } from "@chakra-ui/react";
 import React from "react";
-import {
-  CloseIcon,
-  InfoIcon,
-  WarningIcon,
-  WarningTwoIcon,
-  InfoOutlineIcon,
-  NotAllowedIcon,
-} from "@chakra-ui/icons";
-import ErrorState from "@/components/error-state";
 
 export default function Home() {
   const { loading, error, data, fetchMore } = useQuery<AnimeListResponse>(
@@ -67,19 +58,14 @@ export default function Home() {
           <VStack gap="4" h="full" w="full">
             <SimpleGridWrapper justifyContent={"center"}>
               {data?.Page.media.map((item) => (
-                <Link
+                <AnimeCard
                   key={item.id}
-                  href={`/anime-detail/${item.id}`}
-                  style={{ width: "100%" }}
-                >
-                  <AnimeCard
-                    key={item.id}
-                    averageScore={item.averageScore}
-                    coverImage={item.coverImage}
-                    seasonYear={item.seasonYear}
-                    title={item.title}
-                  />
-                </Link>
+                  averageScore={item.averageScore}
+                  coverImage={item.coverImage}
+                  seasonYear={item.seasonYear}
+                  title={item.title}
+                  id={item.id}
+                />
               ))}
             </SimpleGridWrapper>
             <Pagination pageCount={pageCount} onClick={handleOnClick} />

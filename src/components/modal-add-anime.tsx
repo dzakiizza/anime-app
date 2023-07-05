@@ -1,50 +1,52 @@
-import { useAppContext } from "@/context/app-provider";
-import { MediaAnimeDetail, MediaAnimeList } from "@/graphql/queries-types";
-import { useFormCollection } from "@/hooks/useFormCollection";
-import { CloseIcon } from "@chakra-ui/icons";
+import { CollectionList, useAppContext } from "@/context/app-provider";
+import { MediaAnimeList } from "@/graphql/queries-types";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  FormControl,
-  FormLabel,
-  Input,
-  FormErrorMessage,
-  ModalFooter,
   Button,
-  Flex,
-  Text,
-  Heading,
-  VStack,
-  CheckboxGroup,
   Checkbox,
+  CheckboxGroup,
+  Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import React from "react";
 
 const ModalAddAnime = ({
-  name,
   data,
   isOpen,
   collectionInfo,
   onClose,
+  footerMessage,
 }: {
-  name?: string;
   data: MediaAnimeList;
-  collectionInfo: Record<string, any>[];
+  collectionInfo: CollectionList[];
   isOpen: boolean;
   onClose: () => void;
+  footerMessage?: string;
 }) => {
   const { collectionList, action } = useAppContext();
-  const selectedList = collectionInfo.map((item) => item.name);
+  const selectedList = React.useMemo(() => {
+    return collectionInfo.map((item) => item.name);
+  }, [collectionInfo]);
 
   const [selectedCollection, setSelectedCollecation] =
     React.useState<(string | number)[]>(selectedList);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        setSelectedCollecation(selectedList);
+      }}
+      size="xl"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
@@ -89,9 +91,7 @@ const ModalAddAnime = ({
           >
             Submit
           </Button>
-          <Text fontSize="12px">
-            The anime that has been added can not remove from this modal
-          </Text>
+          {footerMessage && <Text fontSize="12px">{footerMessage}</Text>}
         </ModalFooter>
       </ModalContent>
     </Modal>

@@ -1,10 +1,16 @@
 import AnimeDetailLoading from "@/components/anime-detail-loading";
 import BaseContainer from "@/components/base-container";
+import CollectionCard from "@/components/collection-card";
 import ErrorState from "@/components/error-state";
+import ModalAddAnime from "@/components/modal-add-anime";
+import ModalAddCollection from "@/components/modal-add-collection";
+import SimpleGridWrapper from "@/components/simple-grid-wrapper";
+import { useAppContext } from "@/context/app-provider";
 import { GET_ANIME_DETAILS } from "@/graphql/queries";
 import { MediaAnimeDetail, MediaAnimeList } from "@/graphql/queries-types";
 import { graphqlClient } from "@/lib/client";
 import { ApolloError } from "@apollo/client";
+import { SmallAddIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Button,
@@ -16,11 +22,9 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import parse from "html-react-parser";
-import ModalAddAnime from "@/components/modal-add-anime";
-import { useAppContext } from "@/context/app-provider";
-import { CloseIcon } from "@chakra-ui/icons";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import React from "react";
 
 export const getServerSideProps: GetServerSideProps<
   {
@@ -35,15 +39,6 @@ export const getServerSideProps: GetServerSideProps<
     variables: { id: params?.id },
   });
   const err = typeof error === "undefined" ? null : error;
-  if (error || loading) {
-    return {
-      props: {
-        data,
-        loading,
-        error: err,
-      },
-    };
-  }
   return {
     props: {
       data,
@@ -59,8 +54,16 @@ const DetailAnimePage = ({
   error,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { collectionList } = useAppContext();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const {
+    isOpen: isOpenAddAnime,
+    onOpen: onOpenAddAnime,
+    onClose: onCloseAddAnime,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenAddCollection,
+    onOpen: onOpenAddCollection,
+    onClose: onCloseAddCollection,
+  } = useDisclosure();
   const cardData: MediaAnimeList = {
     title: data.Media.title,
     id: data.Media.id,
@@ -68,15 +71,18 @@ const DetailAnimePage = ({
     seasonYear: data.Media.seasonYear,
     coverImage: data.Media.coverImage,
   };
+  const collectionInfo = React.useMemo(() => {
+    return collectionList.filter((item) =>
+      item.animeList.find(
+        (anime: Partial<MediaAnimeList>) =>
+          anime?.title?.romaji === data.Media.title.romaji
+      )
+    );
+  }, [collectionList]);
+
   if (error) {
     return <ErrorState />;
   }
-
-  const collectionInfo = collectionList.filter((item) =>
-    item.animeList.find(
-      (anime: MediaAnimeList) => anime.title.romaji === data.Media.title.romaji
-    )
-  );
 
   return (
     <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
@@ -86,7 +92,7 @@ const DetailAnimePage = ({
         <Flex
           w="full"
           p="4"
-          bg="gray.700"
+          bg="blackAlpha.300"
           borderRadius="16px"
           gap={{ base: "16px", md: "24px" }}
           flexDir={{ base: "column", md: "row" }}
@@ -101,10 +107,12 @@ const DetailAnimePage = ({
             <VStack alignItems="flex-start" gap="8px">
               <Button
                 size="sm"
-                onClick={onOpen}
+                onClick={
+                  collectionList.length ? onOpenAddAnime : onOpenAddCollection
+                }
                 borderRadius="8px"
                 colorScheme="teal"
-                leftIcon={<CloseIcon transform="rotate(45deg)" fontSize="10px" />}
+                leftIcon={<SmallAddIcon fontSize="20px" />}
               >
                 Add to collection
               </Button>
@@ -131,15 +139,37 @@ const DetailAnimePage = ({
               <Text fontStyle="italic" px={{ base: 3, lg: 0 }} pt={5}>
                 “{parse(`${data.Media.description}`)}”
               </Text>
+              {collectionInfo.length && (
+                <>
+                  <Heading size="md">Collection Info</Heading>
+
+                  <SimpleGridWrapper columns={{ base: 2, md: 3 }}>
+                    {collectionInfo.map((item) => (
+                      <CollectionCard
+                        key={item.name}
+                        item={item}
+                        mode="display"
+                      />
+                    ))}
+                  </SimpleGridWrapper>
+                </>
+              )}
             </VStack>
           </VStack>
         </Flex>
       )}
       <ModalAddAnime
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isOpenAddAnime}
+        onClose={onCloseAddAnime}
         data={cardData}
         collectionInfo={collectionInfo}
+        footerMessage="The anime that has been added can not remove from this modal"
+      />
+      <ModalAddCollection
+        isOpen={isOpenAddCollection}
+        onClose={onCloseAddCollection}
+        title="New Collection"
+        footerMessage="You dont have a collection yet. Set a new collection first"
       />
     </BaseContainer>
   );

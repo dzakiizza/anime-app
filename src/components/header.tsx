@@ -1,5 +1,6 @@
 import { HamburgerIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -12,11 +13,10 @@ import {
   Text,
   VStack,
   useDisclosure,
-  Box,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import BaseContainer from "./base-container";
 import { useRouter } from "next/router";
+import BaseContainer from "./base-container";
 
 const HEADER_MENU = [
   { title: "Home", link: "/" },

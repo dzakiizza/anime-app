@@ -1,8 +1,9 @@
+import { MediaAnimeList } from "@/graphql/queries-types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import * as React from "react";
-import { produce } from "immer";
 import randomColor from "@/lib/randomColor";
-import { MediaAnimeDetail, MediaAnimeList } from "@/graphql/queries-types";
+import { produce } from "immer";
+import * as React from "react";
+import { v4 } from "uuid";
 
 interface StoreProps {}
 
@@ -10,17 +11,26 @@ interface ProviderProps extends StoreProps {
   children?: React.ReactNode;
 }
 
+export type CollectionList = {
+  id: string;
+  name: string;
+  color: string;
+  animeList: Partial<MediaAnimeList>[];
+};
+
 type ContextType = {
   setState: React.Dispatch<React.SetStateAction<ContextType["state"]>>;
   state: {};
-  collectionList: Record<string, any>[] | [];
+  collectionList: CollectionList[];
   action: {
-    addCollection: (name: string) => void;
+    addCollection: (name: string) => Promise<void>;
     removeCollection: (name: string) => void;
+    editCollection: (id: string, updatedName: string) => void;
     addAnime: (
       selectedCollection: (string | number)[],
       data: MediaAnimeList
     ) => void;
+    removeAnime: (id: number, collectionId: string) => void;
   };
   setCollectionList: (value: any) => void;
 };
@@ -28,11 +38,13 @@ type ContextType = {
 const initialValues: ContextType = {
   setState: () => {},
   state: {},
-  collectionList: [],
+  collectionList: [{ id: v4(), name: "", color: "#FFFFFF", animeList: [] }],
   action: {
-    addCollection: (name) => {},
+    addCollection: async (name) => {},
     removeCollection: (name) => {},
+    editCollection: (id, updatedName) => {},
     addAnime: (selectedCollection, data) => {},
+    removeAnime: (id, collectionId) => {},
   },
   setCollectionList: () => {},
 };
@@ -60,11 +72,11 @@ const Store = (props: StoreProps) => {
     data: MediaAnimeList
   ) => {
     setCollectionList(
-      produce(collectionList, (draft: any[]) => {
+      produce(collectionList, (draft: CollectionList[]) => {
         selectedCollection.map((selected) => {
           const index = draft.findIndex((item) => item.name === selected);
           const exist = draft[index].animeList.filter(
-            (item: any) => item.id === data.id
+            (item: Partial<MediaAnimeList>) => item.id === data.id
           );
           if (!exist.length) {
             draft[index].animeList.push({ ...data });
@@ -73,19 +85,50 @@ const Store = (props: StoreProps) => {
       })
     );
   };
-  const addCollection = (name: string) => {
+  const addCollection = async (name: string) => {
+    const collectionId = v4();
     setCollectionList(
-      produce(collectionList, (draft: any[]) => {
-        draft.push({ name, color: randomColor(), animeList: [] });
+      produce(collectionList, (draft: CollectionList[]) => {
+        draft.push({
+          id: collectionId,
+          name,
+          color: randomColor(),
+          animeList: [],
+        });
       })
     );
   };
-  const removeCollection = (name: string) => {
+  const removeCollection = (id: string) => {
     setCollectionList(
-      produce(collectionList, (draft: any[]) => {
-        const index = draft.findIndex((item) => item.name === name);
+      produce(collectionList, (draft: CollectionList[]) => {
+        const index = draft.findIndex((item) => item.id === id);
         if (index !== -1) {
           draft.splice(index, 1);
+        }
+      })
+    );
+  };
+  const editCollection = (id: string, updatedName: string) => {
+    setCollectionList(
+      produce(collectionList, (draft: CollectionList[]) => {
+        const index = draft.findIndex((item) => item.id === id);
+        if (index !== -1) {
+          draft[index].name = updatedName;
+        }
+      })
+    );
+  };
+  const removeAnime = (id: number, collectionId: string) => {
+    setCollectionList(
+      produce(collectionList, (draft: CollectionList[]) => {
+        const index = draft.findIndex((item) => item.id === collectionId);
+        if (index !== -1) {
+          const animeIndex = draft[index].animeList.findIndex(
+            (item: Partial<MediaAnimeList>) => item.id === id
+          );
+          if (animeIndex !== -1) {
+            draft[index].animeList.splice(animeIndex, 1);
+          }
         }
       })
     );
@@ -98,7 +141,9 @@ const Store = (props: StoreProps) => {
     action: {
       addCollection,
       removeCollection,
+      editCollection,
       addAnime,
+      removeAnime,
     },
     setCollectionList,
   };
