@@ -2,15 +2,20 @@ import AnimeCard from "@/components/anime-card";
 import AnimeCardLoading from "@/components/anime-card-loading";
 import BaseContainer from "@/components/base-container";
 import ErrorState from "@/components/error-state";
+import ModalAddAnime from "@/components/modal-add-anime";
+import ModalAddCollection from "@/components/modal-add-collection";
 import Pagination from "@/components/pagination";
 import SimpleGridWrapper from "@/components/simple-grid-wrapper";
+import { useAppContext } from "@/context/app-provider";
 import { GET_ANIME_LIST } from "@/graphql/queries";
-import { AnimeListResponse } from "@/graphql/queries-types";
+import { AnimeListResponse, MediaAnimeList } from "@/graphql/queries-types";
 import { useQuery } from "@apollo/client";
-import { Heading, VStack } from "@chakra-ui/react";
+import { SmallAddIcon } from "@chakra-ui/icons";
+import { Heading, VStack, Flex, Button, useDisclosure } from "@chakra-ui/react";
 import React from "react";
 
 export default function Home() {
+  const { collectionList } = useAppContext();
   const { loading, error, data, fetchMore } = useQuery<AnimeListResponse>(
     GET_ANIME_LIST,
     {
@@ -26,7 +31,37 @@ export default function Home() {
     return 0;
   }, [data]);
 
-  const handleOnClick = React.useCallback(
+  const [isBulkMode, setBulkMode] = React.useState(false);
+  const [selectedAnime, setSelectedAnime] = React.useState<
+    Partial<MediaAnimeList[]>
+  >([]);
+
+  const resetBulk = () => {
+    setBulkMode(false);
+    setSelectedAnime([]);
+  };
+
+  const handleSelect = React.useCallback(
+    (data: MediaAnimeList, isSelected: boolean, id: number | undefined) => {
+      if (!isSelected) {
+        setSelectedAnime((prev) => [...prev, data]);
+      } else {
+        setSelectedAnime((prev) => [...prev.filter((item) => item?.id !== id)]);
+      }
+    },
+    []
+  );
+
+  const handleAddCollection = React.useCallback(() => {
+    if (collectionList.length) {
+      setBulkMode(!isBulkMode);
+      setSelectedAnime([]);
+    } else {
+      onOpenAddCollection();
+    }
+  }, [collectionList, isBulkMode]);
+
+  const handleOnClickPaginate = React.useCallback(
     (e: { selected: number }) => {
       fetchMore({
         variables: { page: e.selected + 1, perPage: 10 },
@@ -38,14 +73,60 @@ export default function Home() {
     [fetchMore]
   );
 
+  const {
+    isOpen: isOpenAddCollection,
+    onOpen: onOpenAddCollection,
+    onClose: onCloseAddCollection,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenAddAnime,
+    onOpen: onOpenAddAnime,
+    onClose: onCloseAddAnime,
+  } = useDisclosure();
+
   if (error) return <ErrorState />;
 
   return (
     <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
       <VStack p={{ base: "0", lg: "4" }} w="full">
-        <Heading size="lg" mb="4">
-          Top Anime List
-        </Heading>
+        <Flex
+          w="full"
+          justifyContent="space-between"
+          flexDir={{ base: "column", md: "row" }}
+          alignItems="center"
+        >
+          <Heading size="lg" mb="4">
+            Anime List
+          </Heading>
+          <Flex gap="8px">
+            <Button
+              w={{ base: "full", md: "fit-content" }}
+              size="sm"
+              borderRadius="8px"
+              colorScheme="teal"
+              leftIcon={
+                !isBulkMode ? <SmallAddIcon fontSize="20px" /> : undefined
+              }
+              onClick={handleAddCollection}
+            >
+              {isBulkMode ? "Cancel" : "Add to collection"}
+            </Button>
+            {isBulkMode && (
+              <Button
+                w={{ base: "full", md: "fit-content" }}
+                size="sm"
+                borderRadius="8px"
+                colorScheme="teal"
+                onClick={onOpenAddAnime}
+                isDisabled={Boolean(!selectedAnime.length)}
+              >
+                Done
+              </Button>
+            )}
+          </Flex>
+        </Flex>
+
         {loading ? (
           <VStack gap="4" h="full" w="full">
             <SimpleGridWrapper>
@@ -60,18 +141,31 @@ export default function Home() {
               {data?.Page.media.map((item) => (
                 <AnimeCard
                   key={item.id}
-                  averageScore={item.averageScore}
-                  coverImage={item.coverImage}
-                  seasonYear={item.seasonYear}
-                  title={item.title}
-                  id={item.id}
+                  data={item}
+                  mode={isBulkMode ? "bulk" : "display"}
+                  handleSelect={handleSelect}
+                  selectedAnime={selectedAnime}
                 />
               ))}
             </SimpleGridWrapper>
-            <Pagination pageCount={pageCount} onClick={handleOnClick} />
+            <Pagination pageCount={pageCount} onClick={handleOnClickPaginate} />
           </VStack>
         )}
       </VStack>
+      <ModalAddCollection
+        isOpen={isOpenAddCollection}
+        onClose={onCloseAddCollection}
+        title="New Collection"
+        footerMessage="You dont have a collection yet. Set a new collection first"
+      />
+      <ModalAddAnime
+        isOpen={isOpenAddAnime}
+        onClose={onCloseAddAnime}
+        resetBulk={resetBulk}
+        data={selectedAnime}
+        footerMessage="The anime that has been added can not remove from this modal"
+        mode="bulk"
+      />
     </BaseContainer>
   );
 }

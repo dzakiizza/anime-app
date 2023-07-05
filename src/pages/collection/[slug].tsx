@@ -5,6 +5,7 @@ import ModalDeleteAnime from "@/components/modal-delete-anime";
 import ModalEditCollection from "@/components/modal-edit-collection";
 import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { useAppContext } from "@/context/app-provider";
+import { MediaAnimeList } from "@/graphql/queries-types";
 import { EditIcon } from "@chakra-ui/icons";
 import {
   Flex,
@@ -64,14 +65,10 @@ const CollectionPageDetail = () => {
         <VStack gap="4" h="full" w="full">
           {collection?.animeList?.length ? (
             <SimpleGridWrapper justifyContent={"center"}>
-              {collection?.animeList.map((item: any) => (
+              {collection?.animeList.map((item) => (
                 <AnimeCard
                   key={item.id}
-                  averageScore={item.averageScore}
-                  coverImage={item.coverImage}
-                  seasonYear={item.seasonYear}
-                  title={item.title}
-                  id={item.id}
+                  data={item}
                   mode="edit"
                   onOpenRemoveModal={handleOpenRemoveModal}
                 />

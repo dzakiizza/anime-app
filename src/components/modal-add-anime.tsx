@@ -22,21 +22,41 @@ const ModalAddAnime = ({
   isOpen,
   collectionInfo,
   onClose,
+  resetBulk,
   footerMessage,
+  mode = "single",
 }: {
-  data: MediaAnimeList;
-  collectionInfo: CollectionList[];
+  data: MediaAnimeList | (MediaAnimeList | undefined)[];
+  collectionInfo?: CollectionList[];
   isOpen: boolean;
   onClose: () => void;
+  resetBulk?: () => void;
   footerMessage?: string;
+  mode?: "single" | "bulk";
 }) => {
   const { collectionList, action } = useAppContext();
   const selectedList = React.useMemo(() => {
-    return collectionInfo.map((item) => item.name);
+    if (collectionInfo) {
+      return collectionInfo.map((item) => item.name);
+    } else {
+      return [];
+    }
   }, [collectionInfo]);
 
   const [selectedCollection, setSelectedCollecation] =
     React.useState<(string | number)[]>(selectedList);
+
+  const handleSubmit = React.useCallback(() => {
+    if (mode === "single") {
+      action.addAnime(selectedCollection, data as MediaAnimeList);
+      onClose();
+    } else {
+      action.addBulkAnime(selectedCollection, data as MediaAnimeList[]);
+      if (resetBulk) resetBulk();
+      onClose();
+      setSelectedCollecation([]);
+    }
+  }, [mode, action.addAnime, selectedCollection, data]);
 
   return (
     <Modal
@@ -80,15 +100,7 @@ const ModalAddAnime = ({
         </ModalBody>
 
         <ModalFooter flexDir="column" gap="8px" alignItems="flex-start">
-          <Button
-            colorScheme="teal"
-            mr={3}
-            w="full"
-            onClick={() => {
-              action.addAnime(selectedCollection, data);
-              onClose();
-            }}
-          >
+          <Button colorScheme="teal" mr={3} w="full" onClick={handleSubmit}>
             Submit
           </Button>
           {footerMessage && <Text fontSize="12px">{footerMessage}</Text>}
