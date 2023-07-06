@@ -55,7 +55,7 @@ const CollectionPageDetail = () => {
   if (!router.isReady || !collection) return null;
 
   return (
-    <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
+    <BaseContainer pt={{ base: "32", md: "40" }} pb="24">
       <VStack p={{ base: "0", lg: "4" }} w="full">
         <Flex gap="8px" alignItems="center" mb="4">
           <Heading size="lg">{collection.name}</Heading>

@@ -76,7 +76,7 @@ const DetailAnimePage = ({
   }
 
   return (
-    <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
+    <BaseContainer pt={{ base: "32", md: "40" }} pb="24">
       {loading ? (
         <AnimeDetailLoading />
       ) : (

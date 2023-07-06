@@ -61,7 +61,7 @@ const CollectionPage = () => {
   };
 
   return (
-    <BaseContainer pt={{ base: "32", md: "40" }}>
+    <BaseContainer pt={{ base: "32", md: "40" }} pb="24">
       <VStack gap="12px" alignItems="center" p={{ base: "0", lg: "4" }}>
         <Flex
           w="full"
