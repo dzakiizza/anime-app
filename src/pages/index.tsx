@@ -91,7 +91,7 @@ export default function Home() {
   if (error) return <ErrorState />;
 
   return (
-    <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
+    <BaseContainer pt={{ base: "32", md: "40" }} pb="24">
       <VStack p={{ base: "0", lg: "4" }} w="full">
         <HomeHeading
           isBulkMode={isBulkMode}
