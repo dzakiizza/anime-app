@@ -1,9 +1,6 @@
 import BaseContainer from "@/components/base-container";
 import CollectionCard from "@/components/collection-card";
 import EmptyState from "@/components/empty-state";
-import ModalAddCollection from "@/components/modal-add-collection";
-import ModalDeleteCollection from "@/components/modal-delete-collection";
-import ModalEditCollection from "@/components/modal-edit-collection";
 import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { useAppContext } from "@/context/app-provider";
 import { SmallAddIcon } from "@chakra-ui/icons";
@@ -15,6 +12,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
+
+import dynamic from "next/dynamic";
+
+const ModalDeleteCollection = dynamic(
+  () => import("@/components/modal-delete-collection")
+);
+const ModalAddCollection = dynamic(
+  () => import("@/components/modal-add-collection")
+);
+const ModalEditCollection = dynamic(
+  () => import("@/components/modal-edit-collection")
+);
 
 const CollectionPage = () => {
   const {

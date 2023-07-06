@@ -1,5 +1,4 @@
-import { CollectionList, useAppContext } from "@/context/app-provider";
-import { MediaAnimeList } from "@/graphql/queries-types";
+import { useAppContext } from "@/context/app-provider";
 import { useFormCollection } from "@/hooks/useFormCollection";
 import {
   Button,

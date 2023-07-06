@@ -2,18 +2,20 @@ import AnimeDetailContent from "@/components/anime-detail-content";
 import AnimeDetailLoading from "@/components/anime-detail-loading";
 import BaseContainer from "@/components/base-container";
 import ErrorState from "@/components/error-state";
-import ModalAddAnime from "@/components/modal-add-anime";
-import ModalAddCollection from "@/components/modal-add-collection";
 import { useAppContext } from "@/context/app-provider";
 import { GET_ANIME_DETAILS } from "@/graphql/queries";
 import { MediaAnimeDetail, MediaAnimeList } from "@/graphql/queries-types";
 import { graphqlClient } from "@/lib/client";
 import { ApolloError } from "@apollo/client";
-import {
-  useDisclosure
-} from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import dynamic from "next/dynamic";
 import React from "react";
+
+const ModalAddCollection = dynamic(
+  () => import("@/components/modal-add-collection")
+);
+const ModalAddAnime = dynamic(() => import("@/components/modal-add-anime"));
 
 export const getServerSideProps: GetServerSideProps<
   {

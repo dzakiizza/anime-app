@@ -1,11 +1,8 @@
 import AnimeCard from "@/components/anime-card";
 import BaseContainer from "@/components/base-container";
 import EmptyState from "@/components/empty-state";
-import ModalDeleteAnime from "@/components/modal-delete-anime";
-import ModalEditCollection from "@/components/modal-edit-collection";
 import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { useAppContext } from "@/context/app-provider";
-import { MediaAnimeList } from "@/graphql/queries-types";
 import { EditIcon } from "@chakra-ui/icons";
 import {
   Flex,
@@ -14,8 +11,16 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React from "react";
+
+const ModalEditCollection = dynamic(
+  () => import("@/components/modal-edit-collection")
+);
+const ModalDeleteAnime = dynamic(
+  () => import("@/components/modal-delete-anime")
+);
 
 const CollectionPageDetail = () => {
   const router = useRouter();

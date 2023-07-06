@@ -2,17 +2,20 @@ import AnimeCard from "@/components/anime-card";
 import AnimeCardLoading from "@/components/anime-card-loading";
 import BaseContainer from "@/components/base-container";
 import ErrorState from "@/components/error-state";
-import ModalAddAnime from "@/components/modal-add-anime";
-import ModalAddCollection from "@/components/modal-add-collection";
+import HomeHeading from "@/components/home-heading";
 import Pagination from "@/components/pagination";
 import SimpleGridWrapper from "@/components/simple-grid-wrapper";
 import { useAppContext } from "@/context/app-provider";
 import { GET_ANIME_LIST } from "@/graphql/queries";
 import { AnimeListResponse, MediaAnimeList } from "@/graphql/queries-types";
 import { useQuery } from "@apollo/client";
-import { SmallAddIcon } from "@chakra-ui/icons";
-import { Heading, VStack, Flex, Button, useDisclosure } from "@chakra-ui/react";
+import { VStack, useDisclosure } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import React from "react";
+
+const ModalAddAnime = dynamic(() => import("@/components/modal-add-anime"));
+const ModalAddCollection = dynamic(() => import("@/components/modal-add-collection"));
+
 
 export default function Home() {
   const { collectionList } = useAppContext();
@@ -90,43 +93,12 @@ export default function Home() {
   return (
     <BaseContainer pt={{ base: "32", md: "40" }} pb="4">
       <VStack p={{ base: "0", lg: "4" }} w="full">
-        <Flex
-          w="full"
-          justifyContent="space-between"
-          flexDir={{ base: "column", md: "row" }}
-          alignItems="center"
-        >
-          <Heading size="lg" mb="4">
-            Anime List
-          </Heading>
-          <Flex gap="8px">
-            <Button
-              w={{ base: "full", md: "fit-content" }}
-              size="sm"
-              borderRadius="8px"
-              colorScheme="teal"
-              leftIcon={
-                !isBulkMode ? <SmallAddIcon fontSize="20px" /> : undefined
-              }
-              onClick={handleAddCollection}
-            >
-              {isBulkMode ? "Cancel" : "Add to collection"}
-            </Button>
-            {isBulkMode && (
-              <Button
-                w={{ base: "full", md: "fit-content" }}
-                size="sm"
-                borderRadius="8px"
-                colorScheme="teal"
-                onClick={onOpenAddAnime}
-                isDisabled={Boolean(!selectedAnime.length)}
-              >
-                Done
-              </Button>
-            )}
-          </Flex>
-        </Flex>
-
+        <HomeHeading
+          isBulkMode={isBulkMode}
+          selectedAnime={selectedAnime}
+          onOpenAddAnime={onOpenAddAnime}
+          handleAddCollection={handleAddCollection}
+        />
         {loading ? (
           <VStack gap="4" h="full" w="full">
             <SimpleGridWrapper>

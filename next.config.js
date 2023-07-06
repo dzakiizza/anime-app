@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
+
+const withPWA = require('next-pwa')({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  scope: "/",
+  disable: process.env.NODE_ENV !== "production",
+});
+
+
 const nextConfig = {
   compiler: {
     styledComponents: true,
@@ -18,4 +28,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withPWA(nextConfig);
