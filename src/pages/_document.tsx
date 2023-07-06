@@ -5,7 +5,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body style={{ overflowX: "hidden", background: "#1A202C" }}>
+      <body style={{ overflow: "hidden", background: "#1A202C" }}>
         <ColorModeScript initialColorMode="dark" />
         <Main />
         <NextScript />

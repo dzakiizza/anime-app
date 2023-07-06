@@ -57,17 +57,16 @@ const Header = () => {
           </Link>
           <Flex gap="16px" display={{ base: "none", md: "flex" }}>
             {HEADER_MENU.map((item, idx) => (
-              <Box
-                border="1px solid"
-                borderColor={
-                  router.pathname === item.link ? "#38B2AC" : "transparent"
-                }
-                key={idx}
-                p="8px"
-                borderRadius="8px"
-                _hover={{ cursor: "pointer" }}
-              >
-                <Link href={item.link}>
+              <Link href={item.link} key={idx}>
+                <Box
+                  border="1px solid"
+                  borderColor={
+                    router.pathname === item.link ? "#38B2AC" : "transparent"
+                  }
+                  p="8px"
+                  borderRadius="8px"
+                  _hover={{ cursor: "pointer" }}
+                >
                   <Text
                     bgGradient={
                       idx % 2 === 0
@@ -79,8 +78,8 @@ const Header = () => {
                   >
                     {item.title}
                   </Text>
-                </Link>
-              </Box>
+                </Box>
+              </Link>
             ))}
           </Flex>
           <IconButton

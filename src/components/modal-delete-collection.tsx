@@ -10,6 +10,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -27,10 +28,19 @@ const ModalDeleteCollection = ({
   onClose: () => void;
 }) => {
   const { action } = useAppContext();
+  const toast = useToast();
   const handleRemove = React.useCallback(() => {
-    onClose();
     action.removeCollection(collectionId);
-  }, []);
+    onClose();
+    toast({
+      title: "Success",
+      description: "A collection has been deleted",
+      duration: 3000,
+      isClosable: true,
+      status: "success",
+      position: "top",
+    });
+  }, [action.removeCollection, collectionId]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">

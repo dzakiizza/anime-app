@@ -14,6 +14,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -30,6 +31,7 @@ const ModalAddCollection = ({
 }) => {
   const { collectionList, action } = useAppContext();
   const { val, setVal, error } = useFormCollection(collectionList);
+  const toast = useToast();
 
   const closeModal = () => {
     onClose();
@@ -37,14 +39,18 @@ const ModalAddCollection = ({
   };
 
   const handleAdd = React.useCallback(() => {
-    if (!error && val !== "") {
-      action.addCollection(val);
-      closeModal();
-    } else {
-      closeModal();
-    }
+    action.addCollection(val);
+    closeModal();
+    toast({
+      title: "Success",
+      description:
+        "A new collection has been added",
+      duration: 3000,
+      isClosable: true,
+      status: "success",
+      position: "top",
+    });
   }, [action.addCollection, error, val]);
-
   return (
     <Modal isOpen={isOpen} onClose={closeModal} size="xl">
       <ModalOverlay />
@@ -65,7 +71,13 @@ const ModalAddCollection = ({
         </ModalBody>
 
         <ModalFooter flexDir="column" gap="8px" alignItems="flex-start">
-          <Button colorScheme="teal" mr={3} onClick={handleAdd} w="full">
+          <Button
+            colorScheme="teal"
+            mr={3}
+            onClick={handleAdd}
+            w="full"
+            isDisabled={error !== "" || val === ""}
+          >
             Submit
           </Button>
           {footerMessage && <Text fontSize="12px">{footerMessage}</Text>}

@@ -28,7 +28,7 @@ type ContextType = {
       selectedCollection: (string | number)[],
       listData: MediaAnimeList[]
     ) => void;
-    removeCollection: (name: string) => void;
+    removeCollection: (id: string) => void;
     editCollection: (id: string, updatedName: string) => void;
     addAnime: (
       selectedCollection: (string | number)[],
@@ -46,7 +46,7 @@ const initialValues: ContextType = {
   action: {
     addCollection: (name) => {},
     addBulkAnime: (selectedCollection, listData) => {},
-    removeCollection: (name) => {},
+    removeCollection: (id) => {},
     editCollection: (id, updatedName) => {},
     addAnime: (selectedCollection, data) => {},
     removeAnime: (id, collectionId) => {},
@@ -131,6 +131,7 @@ const Store = (props: StoreProps) => {
       setCollectionList(
         produce(collectionList, (draft: CollectionList[]) => {
           const index = draft.findIndex((item) => item.id === id);
+          console.log(id);
           if (index !== -1) {
             draft.splice(index, 1);
           }

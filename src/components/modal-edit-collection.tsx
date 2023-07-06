@@ -13,6 +13,7 @@ import {
   FormErrorMessage,
   ModalFooter,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -41,14 +42,20 @@ const ModalEditCollection = ({
     onClose();
   };
 
-  const handleEdit = () => {
-    if (!error && val !== "") {
-      action.editCollection(collectionId, val);
-      closeModal();
-    } else {
-      closeModal();
-    }
-  };
+  const toast = useToast();
+
+  const handleEdit = React.useCallback(() => {
+    action.editCollection(collectionId, val);
+    closeModal();
+    toast({
+      title: "Success",
+      description: "A collection has been edited",
+      duration: 3000,
+      isClosable: true,
+      status: "success",
+      position: "top",
+    });
+  }, [val, collectionId, action.editCollection]);
 
   return (
     <Modal
@@ -80,7 +87,12 @@ const ModalEditCollection = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="teal" mr={3} onClick={handleEdit}>
+          <Button
+            colorScheme="teal"
+            mr={3}
+            onClick={handleEdit}
+            isDisabled={error !== "" || val === ""}
+          >
             Submit
           </Button>
         </ModalFooter>

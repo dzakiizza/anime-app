@@ -14,6 +14,7 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -35,6 +36,7 @@ const ModalAddAnime = ({
   mode?: "single" | "bulk";
 }) => {
   const { collectionList, action } = useAppContext();
+  const toast = useToast();
   const selectedList = React.useMemo(() => {
     if (collectionInfo) {
       return collectionInfo.map((item) => item.name);
@@ -46,17 +48,48 @@ const ModalAddAnime = ({
   const [selectedCollection, setSelectedCollecation] =
     React.useState<(string | number)[]>(selectedList);
 
+  const [isDirty, setIsDirty] = React.useState(false);
+
+  const showToast = () => {
+    toast({
+      title: "Success",
+      description:
+        "Anime has been added. Check the selected collection to see the anime",
+      duration: 3000,
+      isClosable: true,
+      status: "success",
+      position: "top",
+    });
+  };
+
   const handleSubmit = React.useCallback(() => {
     if (mode === "single") {
       action.addAnime(selectedCollection, data as MediaAnimeList);
       onClose();
+      showToast();
     } else {
       action.addBulkAnime(selectedCollection, data as MediaAnimeList[]);
       if (resetBulk) resetBulk();
       onClose();
       setSelectedCollecation([]);
+      showToast();
     }
-  }, [mode, action.addAnime, selectedCollection, data]);
+  }, [
+    mode,
+    action.addAnime,
+    action.addBulkAnime,
+    selectedCollection,
+    data,
+    isDirty,
+  ]);
+
+  React.useEffect(() => {
+    if (JSON.stringify(selectedCollection) === JSON.stringify(selectedList)) {
+      setIsDirty(false);
+    } else {
+      setIsDirty(true);
+    }
+  }, [selectedList, selectedCollection]);
 
   return (
     <Modal
@@ -100,7 +133,13 @@ const ModalAddAnime = ({
         </ModalBody>
 
         <ModalFooter flexDir="column" gap="8px" alignItems="flex-start">
-          <Button colorScheme="teal" mr={3} w="full" onClick={handleSubmit}>
+          <Button
+            colorScheme="teal"
+            mr={3}
+            w="full"
+            onClick={handleSubmit}
+            isDisabled={!isDirty}
+          >
             Submit
           </Button>
           {footerMessage && <Text fontSize="12px">{footerMessage}</Text>}

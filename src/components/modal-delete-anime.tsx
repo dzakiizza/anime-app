@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -28,10 +29,19 @@ const ModalDeleteAnime = ({
   onClose: () => void;
 }) => {
   const { action } = useAppContext();
+  const toast = useToast();
 
   const handleRemove = React.useCallback(() => {
     action.removeAnime(id, collectionId);
     onClose();
+    toast({
+      title: "Success",
+      description: "Anime has been deleted",
+      duration: 3000,
+      isClosable: true,
+      status: "success",
+      position: "top",
+    });
   }, [action.removeAnime, id, collectionId]);
 
   return (
