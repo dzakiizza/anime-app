@@ -131,7 +131,6 @@ const Store = (props: StoreProps) => {
       setCollectionList(
         produce(collectionList, (draft: CollectionList[]) => {
           const index = draft.findIndex((item) => item.id === id);
-          console.log(id);
           if (index !== -1) {
             draft.splice(index, 1);
           }
